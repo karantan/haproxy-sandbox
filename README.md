@@ -33,6 +33,9 @@ $ sudo apt install micro
 
 Transfer `/api` folder to the server, build it (`go build`) and run it (`./hsapi`)
 
+You might also need to disable the firewall (`sudo ufw disable`) or allow traffic via
+port 80.
+
 ## Testing
 
 We'll use [`hay`](https://github.com/rakyll/hey) to test things like rate limiting.
@@ -84,6 +87,22 @@ Status code distribution:
   [200]	20 responses
   [429]	79 responses
 
+```
+
+You can see these results in the HAProxy log. This file is usually located in
+`/var/log/haproxy.log`. Check your `/etc/rsyslog.d` settings.
+
+
+```
+...
+Sep 23 10:05:05 karantan haproxy[2149]: 93.103.124.110:52098 [23/Sep/2022:10:05:05.497] web api/server1 0/0/0/0/0 200 151 - - ---- 3/3/0/0/0 0/0 {70.34.213.|hey/0.0.1} "GET / HTTP/1.1"
+Sep 23 10:05:05 karantan haproxy[2149]: 93.103.124.110:52097 [23/Sep/2022:10:05:05.502] web api/server1 0/0/0/0/0 200 151 - - ---- 3/3/0/0/0 0/0 {70.34.213.|hey/0.0.1} "GET / HTTP/1.1"
+Sep 23 10:05:05 karantan haproxy[2149]: 93.103.124.110:52096 [23/Sep/2022:10:05:05.544] web web/<NOSRV> 0/-1/-1/-1/0 429 225 - - PR-- 3/3/0/0/0 0/0 {70.34.213.|hey/0.0.1} "GET / HTTP/1.1"
+Sep 23 10:05:05 karantan haproxy[2149]: 93.103.124.110:52097 [23/Sep/2022:10:05:05.544] web api/server1 0/0/0/1/1 200 151 - - ---- 3/3/0/0/0 0/0 {70.34.213.|hey/0.0.1} "GET / HTTP/1.1"
+Sep 23 10:05:05 karantan haproxy[2149]: 93.103.124.110:52098 [23/Sep/2022:10:05:05.548] web web/<NOSRV> 0/-1/-1/-1/0 429 225 - - PR-- 3/3/0/0/0 0/0 {70.34.213.|hey/0.0.1} "GET / HTTP/1.1"
+Sep 23 10:05:05 karantan haproxy[2149]: 93.103.124.110:52097 [23/Sep/2022:10:05:05.590] web web/<NOSRV> 0/-1/-1/-1/0 429 225 - - PR-- 3/3/0/0/0 0/0 {70.34.213.|hey/0.0.1} "GET / HTTP/1.1"
+Sep 23 10:05:05 karantan haproxy[2149]: 93.103.124.110:52096 [23/Sep/2022:10:05:05.591] web web/<NOSRV> 0/-1/-1/-1/0 429 225 - - PR-- 3/3/0/0/0 0/0 {70.34.213.|hey/0.0.1} "GET / HTTP/1.1"
+...
 ```
 
 ## Resources
